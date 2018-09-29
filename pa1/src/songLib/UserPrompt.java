@@ -3,14 +3,23 @@ package songLib;
 import java.util.Optional;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.LibraryEntry;
 
 final class UserPrompt {
+
+    private static final String CANCEL = "Cancel";
+    private static final String CLOSE = "Close";
+    private static final String ERROR = "ERROR";
+    private static final String MESSAGE = "Cannot add duplicate song!";
 
     private static final String SONG_TITLE = "Song Title";
     private static final String ARTIST = "Artist";
@@ -23,7 +32,7 @@ final class UserPrompt {
 		addDialog.setHeaderText(header);
 
 		ButtonType addButtonType = new ButtonType(dialogTitle, ButtonData.OK_DONE);
-		Button cancel = new Button("Cancel");
+		Button cancel = new Button(CANCEL);
 		cancel.setOnAction(e -> window.close());
 		addDialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
 
@@ -66,6 +75,28 @@ final class UserPrompt {
 		Optional<LibraryEntry> result = addDialog.showAndWait();
 		return result.get();
 	}
+
+	static void duplicateEntry() {
+        Stage window = new Stage();
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(ERROR);
+        window.setMinWidth(250);
+
+        Label label= new Label();
+        label.setText(MESSAGE);
+
+        Button close = new Button(CLOSE);
+        close.setOnAction(e -> window.close());
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, close);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+    }
 
 	private static void manageEntry(final Dialog<LibraryEntry> entryDialog, final TextField title,
 									final TextField artist, final TextField album, final TextField year) {

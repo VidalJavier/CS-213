@@ -108,9 +108,12 @@ public class SongLibrary extends Application {
             } else if (newEntry.getTitle().compareTo(libList.get(index).getTitle()) < 0) {
                 libList.add(index, newEntry);
             } else {
-                while(newEntry.getTitle().compareTo(libList.get(index).getTitle()) == 0) {
-                    if(newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
+                while (newEntry.getTitle().compareTo(libList.get(index).getTitle()) == 0) {
+                    if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
                         break;
+                    } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
+                        UserPrompt.duplicateEntry();
+                        return libList;
                     } else {
                         index++;
                     }
