@@ -1,60 +1,45 @@
 package model;
 
-public class LibEntry {
+public class LibraryEntry {
+
 	private String title;
 	private String artist;
 	private String album;
 	private String year;
-	
-	public LibEntry(){
-		this.title = null;
-		this.artist = null;
-		this.album = null;
-		this.year = null;
+
+	public LibraryEntry(){
 	}
-	
-	public LibEntry(String title, String artist, String album, String year){
+
+	public LibraryEntry(final String title, final String artist, final String album, final String year){
 		this.title = title;
 		this.artist = artist;
 		this.album = album;
 		this.year = year;
 	}
-	
+
 	public String getTitle(){
 		return this.title;
 	}
 	
-	public LibEntry setTitle(String title){
-		this.title = title;
-		return this;
-	}
+	public void setTitle(final String title){ this.title = title; }
 	
 	public String getArtist(){
 		return this.artist;
 	}
 	
-	public LibEntry setArtist(String artist){
-		this.artist = artist;
-		return this;
-	}
+	public void setArtist(final String artist){ this.artist = artist; }
 	
 	public String getAlbum(){
 		return this.album;
 	}
 	
-	public LibEntry setAlbum(String album){
-		this.album = album;
-		return this;
-	}
+	public void setAlbum(final String album){ this.album = album; }
 	
 	public String getYear(){
 		return this.year;
 	}
 	
-	public LibEntry setYear(String year){
-		this.year = year;
-		return this;
-	}
+	public void setYear(final String year){ this.year = year; }
 	
 	@Override
 	public String toString(){
