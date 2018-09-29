@@ -1,7 +1,6 @@
 package songLib;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.LibraryEntry;
+import model.UserAction;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,8 +90,13 @@ public class SongLibrary extends Application {
 
     private ArrayList<LibraryEntry> add(final ListView<String> listView, final ArrayList<LibraryEntry> libList,
                                         final Stage primaryStage) {
-        LibraryEntry newEntry = UserPrompt.prompt(ADD, ADD_ENTRY, primaryStage);
+        UserAction action = UserPrompt.prompt(ADD, ADD_ENTRY, primaryStage);
 
+        if(!action.getConfirmation()) {
+            return libList;
+        }
+
+        LibraryEntry newEntry = action.getEntry();
         if (libList.size() == 0) {
             libList.add(newEntry);
         } else {
@@ -132,13 +137,13 @@ public class SongLibrary extends Application {
 
     private ArrayList<LibraryEntry> edit(final ListView<String> listView, final ArrayList<LibraryEntry> libList,
                                          final Stage primaryStage) {
-        LibraryEntry modifiedEntry = UserPrompt.prompt(EDIT, EDIT_ENTRY, primaryStage);
-        System.out.println(modifiedEntry.toString());
-
-        //TODO Still need to sort the list with the new entry
-        libList.set(listView.getSelectionModel().getSelectedIndex(), modifiedEntry);
-        listView.getItems().set(listView.getSelectionModel().getSelectedIndex(),
-                String.format("%s\n\t%s%s",modifiedEntry.getTitle(), BY, modifiedEntry.getArtist()));
+//        LibraryEntry modifiedEntry = UserPrompt.prompt(EDIT, EDIT_ENTRY, primaryStage);
+//        System.out.println(modifiedEntry.toString());
+//
+//        //TODO Still need to sort the list with the new entry
+//        libList.set(listView.getSelectionModel().getSelectedIndex(), modifiedEntry);
+//        listView.getItems().set(listView.getSelectionModel().getSelectedIndex(),
+//                String.format("%s\n\t%s%s",modifiedEntry.getTitle(), BY, modifiedEntry.getArtist()));
 
         return libList;
     }

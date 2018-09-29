@@ -7,12 +7,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.LibraryEntry;
+import model.UserAction;
 
 final class UserPrompt {
 
@@ -26,15 +26,12 @@ final class UserPrompt {
     private static final String ALBUM = "Album";
     private static final String YEAR = "Year";
 	
-	static LibraryEntry prompt(final String dialogTitle, final String header, final Stage window) {
-		Dialog<LibraryEntry> addDialog = new Dialog<>();
+	static UserAction prompt(final String dialogTitle, final String header, final Stage window) {
+		Dialog<ButtonType> addDialog = new Dialog<>();
 		addDialog.setTitle(dialogTitle);
 		addDialog.setHeaderText(header);
 
-		ButtonType addButtonType = new ButtonType(dialogTitle, ButtonData.OK_DONE);
-		Button cancel = new Button(CANCEL);
-		cancel.setOnAction(e -> window.close());
-		addDialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+		addDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		GridPane grid = new GridPane();
 		grid.setHgap(15);
@@ -61,7 +58,7 @@ final class UserPrompt {
         grid.add(album, 1, 2);
         grid.add(year, 1, 3);
 
-		Node addButton = addDialog.getDialogPane().lookupButton(addButtonType);
+		Node addButton = addDialog.getDialogPane().lookupButton(ButtonType.OK);
 		addButton.setDisable(true);
 
 		title.textProperty().addListener((observable, oldValue, newValue) ->
@@ -70,10 +67,15 @@ final class UserPrompt {
                 addButton.setDisable(newValue.trim().isEmpty()));
 
 		addDialog.getDialogPane().setContent(grid);
-		manageEntry(addDialog, title, artist, album, year);
 
-		Optional<LibraryEntry> result = addDialog.showAndWait();
-		return result.get();
+		Optional<ButtonType> result = addDialog.showAndWait();
+
+		if(result.isPresent() && result.get() == ButtonType.OK) {
+		    LibraryEntry newEntry = new LibraryEntry(title.getText(), artist.getText(), album.getText(), year.getText());
+		    return new UserAction(newEntry, true);
+        } else {
+            return new UserAction(new LibraryEntry(), false);
+        }
 	}
 
 	static void duplicateEntry() {
@@ -97,16 +99,4 @@ final class UserPrompt {
         window.setScene(scene);
         window.showAndWait();
     }
-
-	private static void manageEntry(final Dialog<LibraryEntry> entryDialog, final TextField title,
-									final TextField artist, final TextField album, final TextField year) {
-        LibraryEntry newEntry = new LibraryEntry();
-		entryDialog.setResultConverter(addThis -> {
-			newEntry.setTitle(title.getText());
-			newEntry.setAlbum(album.getText());
-			newEntry.setArtist(artist.getText());
-			newEntry.setYear(year.getText());
-			return newEntry;
-		});
-	}
 }
