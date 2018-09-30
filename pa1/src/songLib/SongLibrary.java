@@ -1,5 +1,7 @@
 package songLib;
 
+import javafx.fxml.FXML;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,6 +12,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.TextArea;
+
 import model.LibraryEntry;
 import model.UserAction;
 
@@ -33,14 +37,16 @@ public class SongLibrary extends Application {
 
     private static final String BY = "by ";
 
-    private ListView<String> listView;
+    private ListView<LibraryEntry> listView;
+
+    //private TextArea textArea;
 	
-	public static void main(String[] args){
-		launch(args);
-	}
+    public static void main(String[] args){
+	launch(args);
+    }
 	
-	@Override
-	public void start(Stage primaryStage) throws FileNotFoundException {
+    @Override
+    public void start(Stage primaryStage) throws FileNotFoundException {
         Scene scene = makeScene(primaryStage);
 
         primaryStage.setTitle(SONG_LIBRARY);
@@ -59,36 +65,47 @@ public class SongLibrary extends Application {
 
         listView = new ListView<>();
         for(LibraryEntry entry : libList){
-            listView.getItems().add(String.format("%s\n\t%s%s", entry.getTitle(), BY, entry.getArtist()));
+            listView.getItems().add(entry);
         }
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         listView.getSelectionModel().clearSelection();
         listView.getSelectionModel().selectFirst();
         int selectedIndex = listView.getSelectionModel().getSelectedIndex();
-        if(listView.getSelectionModel().isSelected(selectedIndex)){
-            LibraryEntry entry = libList.get(selectedIndex);
-            String selectedDisplay = String.format("%s\n\t%s%s\n\t%s\n\t%s", entry.getTitle(), BY, entry.getArtist(),
-                    entry.getAlbum(), entry.getYear());
-            listView.getItems().set(selectedIndex, selectedDisplay);
+        
+        TextArea textArea = new TextArea();
+        textArea.setMinHeight(100.0);
+    //TODO Need to fix this to select item on button click
+        if(listView.getSelectionModel().getSelectedItem() != null){
+            textArea.setText("Title: " + listView.getSelectionModel().getSelectedItem().getTitle()
+                    + "\nArtist: " + listView.getSelectionModel().getSelectedItem().getArtist()
+                    + "\nAlbum: " + listView.getSelectionModel().getSelectedItem().getAlbum()
+                    + "\nYear: " + listView.getSelectionModel().getSelectedItem().getYear()
+            );
         } else{
-
+            textArea.setText("Song information");
         }
-
+        
         addEntry.setOnAction(e -> add(listView, libList, primaryStage));
         removeEntry.setOnAction(e -> remove());
         editEntry.setOnAction(e -> edit(listView, libList, primaryStage));
 
         VBox layout = new VBox(10);
+        
         HBox buttonLayout = new HBox(10);
         buttonLayout.getChildren().addAll(addEntry, removeEntry, editEntry);
         buttonLayout.setAlignment(Pos.BASELINE_CENTER);
+        
+        HBox textAreaLayout = new HBox(10);
+        textAreaLayout.getChildren().addAll(textArea);
+        textAreaLayout.setAlignment(Pos.BASELINE_CENTER);
+        
         layout.setPadding(new Insets(20, 20, 20, 20));
-        layout.getChildren().addAll(listView, buttonLayout);
-        return new Scene(layout, 300, 250);
+        layout.getChildren().addAll(listView, buttonLayout, textAreaLayout);
+        return new Scene(layout, 300, 350);
     }
 
-    private ArrayList<LibraryEntry> add(final ListView<String> listView, final ArrayList<LibraryEntry> libList,
+    private ArrayList<LibraryEntry> add(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
                                         final Stage primaryStage) {
         UserAction action = UserPrompt.prompt(ADD, ADD_ENTRY, primaryStage);
 
@@ -126,16 +143,18 @@ public class SongLibrary extends Application {
                 libList.add(index, newEntry);
             }
         }
-
+        
         listView.getItems().clear();
+        
         for(LibraryEntry entry : libList){
-            listView.getItems().add(String.format("%s\n\t%s%s", entry.getTitle(), BY, entry.getArtist()));
+            listView.getItems().add(entry);
+            //listView.getItems().add(String.format("%s\n\t%s%s", entry.getTitle(), BY, entry.getArtist()));
         }
-
+        
         return libList;
     }
 
-    private ArrayList<LibraryEntry> edit(final ListView<String> listView, final ArrayList<LibraryEntry> libList,
+    private ArrayList<LibraryEntry> edit(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
                                          final Stage primaryStage) {
 //        LibraryEntry modifiedEntry = UserPrompt.prompt(EDIT, EDIT_ENTRY, primaryStage);
 //        System.out.println(modifiedEntry.toString());

@@ -32,11 +32,30 @@ public class SongFileHandler {
 		try{
 			while((line = bufferedReader.readLine()) != null) {
 				String entryProperties[] = line.split(",");
-				if(entryProperties.length > 0) {
+                                
+				if(entryProperties.length == 4) {
+                                        String year = entryProperties[3].substring(2);
 					LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
-							entryProperties[2], entryProperties[3]);
+							entryProperties[2], year);
 					libList.add(entry);
-				}
+				} else if(entryProperties.length == 3){
+                                    if(entryProperties[2].startsWith("##")){
+                                        String year = entryProperties[2].substring(2);
+                                        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
+							"", year);
+                                        
+                                    }
+                                    else{
+                                        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
+							entryProperties[2], "");
+                                    }
+                                } else if(entryProperties.length == 2){
+                                    LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
+							"", "");
+                                } else{
+                                    System.out.println("Error with input. Not enough arguments. Should not get here\n");
+                                    System.exit(1);
+                                }
 			}
 			fileReader.close();
 		} catch(IOException e) {
@@ -50,7 +69,7 @@ public class SongFileHandler {
 	public static void saveAndExit(ArrayList<LibraryEntry> libList, File songLibrary) {
 		String newLib = "";
 		for(LibraryEntry entry:libList) {
-			newLib = newLib + entry.toString() + "\n";
+			newLib = newLib + entry.getTitle() + "," + entry.getArtist() + "," + entry.getAlbum() + ",##" + entry.getYear() + "\n";
 		}
 		
 		try {

@@ -41,8 +41,12 @@ public class LibraryEntry {
 	
 	public void setYear(final String year){ this.year = year; }
 	
+        public String toDetailedString(){
+            return this.title + "\n" + this.artist + "\n" + this.album + "\n" + this.year + "\n";
+        }
+        
 	@Override
 	public String toString(){
-		return this.title + "," + this.artist + "," + this.album + "," + this.year;
+		return this.title + "\n" + this.artist + "\n";
 	}
 }
