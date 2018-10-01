@@ -60,29 +60,39 @@ public class SongLibController {
             album.setText(libList.get(selectedIndex).getAlbum());
             year.setText(libList.get(selectedIndex).getYear());
 
-            edit.setOnAction(f -> {
-                if(!libList.isEmpty()) {
-                    boolean check = ErrorBox.confirmation(EDIT_CONFIRMATION);
-                    if (check) {
-                        edit(listView, libList, song.getText(), artist.getText(), album.getText(), year.getText());
-                    }
-                }
-            });
-            delete.setOnAction(g -> {
-                if (!libList.isEmpty()) {
-                    boolean check = ErrorBox.confirmation(DELETE_CONFIRMATION);
-                    if(check) {
-                        delete(listView, libList);
-                    }
-                }
-            });
+            editAction(libList);
+            deleteAction(libList);
         };
 
         add.setOnAction(e -> add(listView, libList));
+        editAction(libList);
+        deleteAction(libList);
         cancel.setOnAction(e -> cancel());
 
         listView.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 	}
+
+    private void deleteAction(ArrayList<LibraryEntry> libList) {
+        delete.setOnAction(g -> {
+            if (!libList.isEmpty()) {
+                boolean check = ErrorBox.confirmation(DELETE_CONFIRMATION);
+                if(check) {
+                    delete(listView, libList);
+                }
+            }
+        });
+    }
+
+    private void editAction(ArrayList<LibraryEntry> libList) {
+        edit.setOnAction(f -> {
+            if(!libList.isEmpty()) {
+                boolean check = ErrorBox.confirmation(EDIT_CONFIRMATION);
+                if (check) {
+                    edit(listView, libList, song.getText(), artist.getText(), album.getText(), year.getText());
+                }
+            }
+        });
+    }
 
     private void selectSong(final ListView<LibraryEntry> listView) {
         if (listView.getSelectionModel().getSelectedItem() != null) {
@@ -105,6 +115,7 @@ public class SongLibController {
 
         LibraryEntry newEntry = new LibraryEntry(song.getText(), artist.getText(), album.getText(), year.getText());
         if (libList.size() == 0) {
+            selectedIndex = 0;
             libList.add(newEntry);
         } else {
             int index;
@@ -115,6 +126,7 @@ public class SongLibController {
                 }
             }
 
+            selectedIndex = index;
             if (index == libList.size()) {
                 libList.add(newEntry);
             } else if (newEntry.getTitle().compareTo(libList.get(index).getTitle()) < 0) {
