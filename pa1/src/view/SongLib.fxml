@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.ListView?>
 
-<AnchorPane 
-	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="view.ListController">
-	<!-- TODO Add Nodes -->
-	<ListView fx:id="listView"
-      	prefHeight="200.0" 
-      	prefWidth="200.0" 
-      	AnchorPane.bottomAnchor="10.0" 
-      	AnchorPane.leftAnchor="10.0" 
-      	AnchorPane.rightAnchor="10.0" 
-      	AnchorPane.topAnchor="10.0" />
-</AnchorPane>
-
+<GridPane fx:controller="songLib.SongLibrary"
+xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10"
+styleClass="root">
+    <padding>
+        <Insets top="25" right="25" bottom="10" left="25"/>
+    </padding>
+    
+    <HBox spacing="10" alignment="center"
+        GridPane.columnIndex="0" GridPane.rowIndex="0">
+        
+        <VBox spacing="5" alignment="left">
+            <ListView fx:id="detailsDisplay"/>
+        </VBox>
+        <VBox spacing="10" alignment="center">
+            <Button id="add" text="Add" alignment="TOP_CENTER"
+                    onAction="#add"/>
+            <Button id="edit" text="Edit" alignment="CENTER"
+                    onAction="#edit"/>
+            <Button id="delete" text="Delete" alignment="BOTTOM_CENTER"
+                    onAction="#remove"/>
+        </VBox>
+        <VBox spacing="5" alignment="right">
+            <ListView fx:id="songList"/>
+        </VBox>
+    </HBox>
+    
+</GridPane>
