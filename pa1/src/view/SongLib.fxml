@@ -1,70 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.ListView?>
 
-<GridPane fx:controller="songLib.SongLibrary"
+<GridPane fx:controller="view.SongLibController"
 xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10"
 styleClass="root">
     <padding>
         <Insets top="25" right="25" bottom="10" left="25"/>
     </padding>
-    
+
     <HBox spacing="10" alignment="center"
         GridPane.columnIndex="0" GridPane.rowIndex="0">
-        
+
         <VBox spacing="5" alignment="CENTER_LEFT">
-            
+
             <GridPane alignment="center" hgap="10" vgap="10">
                 <padding>
                     <Insets top="10" right="10" bottom="10" left="10"/>
                 </padding>
-                
-                <Label text="Title:"
+
+                <Label text="Song:"
                        GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <TextField
-                    GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-        
+                        fx:id="song" layoutX="196.0" layoutY="197.0" prefHeight="25.0" prefWidth="175.0" promptText="(Required)"
+                        GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
                 <Label text="Artist:"
                        GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <TextField
-                    GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                
+                        fx:id="artist" layoutX="196.0" layoutY="197.0" prefHeight="25.0" prefWidth="175.0" promptText="(Required)"
+                        GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
                 <Label text="Album:"
                        GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                 <TextField
-                    GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                
+                        fx:id="album" layoutX="196.0" layoutY="197.0" prefHeight="25.0" prefWidth="175.0" promptText="(Optional)"
+                        GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
                 <Label text="Year:"
                        GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                 <TextField
-                    GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        fx:id="year" layoutX="196.0" layoutY="197.0" prefHeight="25.0" prefWidth="175.0" promptText="(Optional)"
+                        GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             </GridPane>
         </VBox>
-            
+
         <VBox spacing="10" alignment="center">
             <Button fx:id="add" text="Add"/>
             <Button fx:id="edit" text="Edit"/>
             <Button fx:id="delete" text="Delete"/>
             <Button fx:id="cancel" text="Cancel"/>
         </VBox>
-        
-        <VBox spacing="5" alignment="CENTER-RIGHT">
+
+        <VBox spacing="5" alignment="CENTER_RIGHT">
             <ListView fx:id="listView"/>
         </VBox>
     </HBox>
-    
+
     <HBox id="detailsBox" spacing="10" alignment="center"
           GridPane.columnIndex="0" GridPane.rowIndex="4">
-        <TextArea fx:id="textArea"/>
+        <TextArea fx:id="details"/>
     </HBox>
-    
+
 </GridPane>

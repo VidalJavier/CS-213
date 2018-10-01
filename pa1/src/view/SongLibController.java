@@ -1,63 +1,122 @@
 package view;
 
-import java.util.Optional;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import model.LibraryEntry;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class SongLibController {
 
-	@FXML         
-	ListView<String> listView;                
+    private static final String FILE_NAME = "songLibrary.txt";
+    private static final String SONG_DETAILS = "Song details";
 
-	private ObservableList<String> observableList;              
+    private static final String DUPLICATE_MESSAGE = "Error: Cannot add duplicate song";
+    private static final String INVALID_MESSAGE = "Error: Must include both song and artist";
 
-	public void start(Stage mainStage) {
-		//TODO: Grab list from text file that stores data from previous session
-		// create an empty ObservableList from an ArrayList
-		observableList = FXCollections.observableArrayList(); 
+    @FXML TextField song;
+    @FXML TextField artist;
+    @FXML TextField album;
+    @FXML TextField year;
+    @FXML TextArea details;
+    @FXML Button add;
+    @FXML Button edit;
+    @FXML Button delete;
+    @FXML Button cancel;
 
-		listView.setItems(observableList); 
-		
-		// select the first item
-		listView.getSelectionModel().select(0);
+    @FXML ListView<LibraryEntry> listView;
 
-		// set listener for the items
-		listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldVal, newVal)
-				-> showItemInputDialog(mainStage));
+	public void start(final Stage primaryStage) throws FileNotFoundException {
+        File songLibrary = new File(FILE_NAME);
+        ArrayList<LibraryEntry> libList = SongFileHandler.openAndRead(songLibrary);
+        primaryStage.setOnCloseRequest(e -> SongFileHandler.saveAndExit(libList, songLibrary));
+
+        for(LibraryEntry entry : libList){
+            listView.getItems().add(entry);
+        }
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        listView.getSelectionModel().clearSelection();
+        listView.getSelectionModel().selectFirst();
+
+        selectSong(listView);
+
+        EventHandler<MouseEvent> eventHandler = e -> {
+            selectSong(listView);
+            int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+//            edit.setOnAction(h -> edit(listView, libList, primaryStage, selectedIndex));
+//            delete.setOnAction(g -> delete());
+        };
+
+        add.setOnAction(f -> add(listView, libList));
+//        edit.setOnAction(h -> edit(listView, libList, primaryStage, 0));
+//        delete.setOnAction(g -> delete());
+
+        listView.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
+
 	}
 	
-	private void showItem(Stage mainStage) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		//alert.initModality(Modality.NONE);
-		alert.initOwner(mainStage);
-		alert.setTitle("List Item");
-		alert.setHeaderText("Selected list item properties");
+    private void selectSong(final ListView<LibraryEntry> listView) {
+        if (listView.getSelectionModel().getSelectedItem() != null) {
+            details.setEditable(false);
+            details.setText("Song: " + listView.getSelectionModel().getSelectedItem().getTitle()
+                    + "\nArtist: " + listView.getSelectionModel().getSelectedItem().getArtist()
+                    + "\nAlbum: " + listView.getSelectionModel().getSelectedItem().getAlbum()
+                    + "\nYear: " + listView.getSelectionModel().getSelectedItem().getYear());
+        } else {
+            details.setEditable(false);
+            details.setText(SONG_DETAILS);
+        }
+    }
 
-		String content = "Index: " + listView.getSelectionModel().getSelectedIndex() + "\nValue: " +
-				listView.getSelectionModel().getSelectedItem();
+    private ArrayList<LibraryEntry> add(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList) {
+	    if(song.getText().equals("") || artist.getText().equals("")) {
+            UserPrompt.invalidEntry(INVALID_MESSAGE);
+            return libList;
+        }
 
-		alert.setContentText(content);
-		alert.showAndWait();
-		//System.out.println("not blocking");
-	   }
-	
-	private void showItemInputDialog(Stage mainStage) {                
-		String item = listView.getSelectionModel().getSelectedItem();
-		int index = listView.getSelectionModel().getSelectedIndex();
+        LibraryEntry newEntry = new LibraryEntry(song.getText(), artist.getText(), album.getText(), year.getText());
+        if (libList.size() == 0) {
+            libList.add(newEntry);
+        } else {
+            int index;
+            for (index = 0; index < libList.size(); index++) {
+                LibraryEntry curEntry = libList.get(index);
+                if(newEntry.getTitle().compareTo(curEntry.getTitle()) <= 0) {
+                    break;
+                }
+            }
 
-		TextInputDialog dialog = new TextInputDialog(item);
-		dialog.initOwner(mainStage); dialog.setTitle("List Item");
-		dialog.setHeaderText("Selected Item (Index: " + index + ")");
-		dialog.setContentText("Enter name: ");
+            if (index == libList.size()) {
+                libList.add(newEntry);
+            } else if (newEntry.getTitle().compareTo(libList.get(index).getTitle()) < 0) {
+                libList.add(index, newEntry);
+            } else {
+                while (newEntry.getTitle().compareTo(libList.get(index).getTitle()) == 0) {
+                    if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
+                        break;
+                    } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
+                        UserPrompt.invalidEntry(DUPLICATE_MESSAGE);
+                        return libList;
+                    } else {
+                        index++;
+                    }
+                }
+                libList.add(index, newEntry);
+            }
+        }
 
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) { observableList.set(index, result.get()); }
-	}
+        listView.getItems().clear();
+        for(LibraryEntry entry : libList){
+            listView.getItems().add(entry);
+        }
+
+        return libList;
+    }
+
 }
