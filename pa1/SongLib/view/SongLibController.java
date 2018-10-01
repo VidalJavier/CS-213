@@ -125,31 +125,40 @@ public class SongLibController {
             int index;
             for (index = 0; index < libList.size(); index++) {
                 LibraryEntry curEntry = libList.get(index);
-                if(newEntry.getTitle().compareTo(curEntry.getTitle()) <= 0) {
+                if(newEntry.getTitle().toLowerCase().compareTo(curEntry.getTitle().toLowerCase()) <= 0) {
                     break;
                 }
             }
 
-            selectedIndex = index;
             if (index == libList.size()) {
                 libList.add(newEntry);
-            } else if (newEntry.getTitle().compareTo(libList.get(index).getTitle()) < 0) {
+                selectedIndex = index;
+            } else if (newEntry.getTitle().toLowerCase().compareTo(libList.get(index).getTitle().toLowerCase()) < 0) {
                 libList.add(index, newEntry);
+                selectedIndex = index;
             } else {
-                while (newEntry.getTitle().compareTo(libList.get(index).getTitle()) == 0) {
-                    if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
+                boolean check = true;
+                while (newEntry.getTitle().toLowerCase().compareTo(libList.get(index).getTitle().toLowerCase()) == 0) {
+                    if (newEntry.getArtist().toLowerCase().compareTo(libList.get(index).getArtist().toLowerCase()) < 0) {
                         libList.add(index, newEntry);
+                        selectedIndex = index;
+                        check = false;
                         break;
-                    } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
+                    } else if (newEntry.getArtist().toLowerCase().compareTo(libList.get(index).getArtist().toLowerCase()) == 0){
                         ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
                         return;
-                    } else {
-                        if(index == libList.size() - 1) {
-                            libList.add(newEntry);
-                            break;
-                        }
-                        index++;
+                    } else if(index == libList.size() - 1) {
+                        libList.add(newEntry);
+                        selectedIndex = index + 1;
+                        check = false;
+                        break;
                     }
+                    index++;
+                }
+
+                if(check) {
+                    libList.add(index , newEntry);
+                    selectedIndex = index;
                 }
             }
         }
@@ -171,22 +180,16 @@ public class SongLibController {
             return;
         }
 
-	    for (LibraryEntry entry : libList) {
-            if(entry.getTitle().compareTo(song) == 0 && entry.getArtist().compareTo(artist) == 0) {
+        for (int index = 0; index < libList.size(); index++) {
+            LibraryEntry entry = libList.get(index);
+            if(entry.getTitle().compareTo(song) == 0 && entry.getArtist().compareTo(artist) == 0 && index != selectedIndex) {
                 ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
                 return;
             }
         }
 
-        libList.set(selectedIndex, new LibraryEntry(song, artist, album, year));
-        listView.getItems().clear();
-        for(LibraryEntry entry : libList){
-            listView.getItems().add(entry);
-        }
-
-        listView.getSelectionModel().select(selectedIndex);
-        selectSong(listView);
-        SongFileHandler.save(libList, songLibrary);
+        delete(listView, libList);
+        add(listView, libList);
     }
 
     private void delete(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList) {
