@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 import model.LibraryEntry;
 
-public class SongFileHandler {
-	
-	public static ArrayList<LibraryEntry> openAndRead(File songLibrary) throws FileNotFoundException {
+class SongFileHandler {
+
+    static ArrayList<LibraryEntry> openAndRead(File songLibrary) throws FileNotFoundException {
 	    //Load saved user song library from previous session
 		try{
 			if(songLibrary.createNewFile()) {
@@ -60,7 +60,7 @@ public class SongFileHandler {
 		return libList;
 	}
 	
-	public static void saveAndExit(ArrayList<LibraryEntry> libList, File songLibrary) {
+	static void save(ArrayList<LibraryEntry> libList, File songLibrary) {
 		String newLib = "";
 		for(LibraryEntry entry:libList) {
 			newLib = newLib + entry.getTitle() + "," + entry.getArtist() + "," + entry.getAlbum() + ",##" + entry.getYear() + "\n";

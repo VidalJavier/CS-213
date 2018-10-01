@@ -34,10 +34,12 @@ public class SongLibController {
 
     @FXML ListView<LibraryEntry> listView;
 
+    private int selectedIndex;
+    private File songLibrary;
+
 	public void start(final Stage primaryStage) throws FileNotFoundException {
-        File songLibrary = new File(FILE_NAME);
+        songLibrary = new File(FILE_NAME);
         ArrayList<LibraryEntry> libList = SongFileHandler.openAndRead(songLibrary);
-        primaryStage.setOnCloseRequest(e -> SongFileHandler.saveAndExit(libList, songLibrary));
 
         for(LibraryEntry entry : libList){
             listView.getItems().add(entry);
@@ -46,27 +48,32 @@ public class SongLibController {
 
         listView.getSelectionModel().clearSelection();
         listView.getSelectionModel().selectFirst();
+        selectedIndex = 0;
 
         selectSong(listView);
 
         EventHandler<MouseEvent> eventHandler = e -> {
             selectSong(listView);
-            int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+            selectedIndex = listView.getSelectionModel().getSelectedIndex();
             song.setText(libList.get(selectedIndex).getTitle());
             artist.setText(libList.get(selectedIndex).getArtist());
             album.setText(libList.get(selectedIndex).getAlbum());
             year.setText(libList.get(selectedIndex).getYear());
 
             edit.setOnAction(f -> {
-                boolean check = ErrorBox.confirmation(EDIT_CONFIRMATION);
-                if(check) {
-                    edit(listView, libList, selectedIndex, song.getText(), artist.getText(), album.getText(), year.getText());
+                if(!libList.isEmpty()) {
+                    boolean check = ErrorBox.confirmation(EDIT_CONFIRMATION);
+                    if (check) {
+                        edit(listView, libList, song.getText(), artist.getText(), album.getText(), year.getText());
+                    }
                 }
             });
             delete.setOnAction(g -> {
-                boolean check = ErrorBox.confirmation(DELETE_CONFIRMATION);
-                if(check) {
-                    delete(listView, libList, selectedIndex);
+                if (!libList.isEmpty()) {
+                    boolean check = ErrorBox.confirmation(DELETE_CONFIRMATION);
+                    if(check) {
+                        delete(listView, libList);
+                    }
                 }
             });
         };
@@ -131,11 +138,14 @@ public class SongLibController {
         for(LibraryEntry entry : libList){
             listView.getItems().add(entry);
         }
+
+        listView.getSelectionModel().select(selectedIndex);
+        selectSong(listView);
+        SongFileHandler.save(libList, songLibrary);
     }
 
     private void edit(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
-                      final int selectedIndex, final String song, final String artist,
-                      final String album, final String year) {
+                      final String song, final String artist, final String album, final String year) {
         for (LibraryEntry entry : libList) {
             if(entry.getTitle().compareTo(song) == 0 && entry.getArtist().compareTo(artist) == 0) {
                 ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
@@ -148,11 +158,14 @@ public class SongLibController {
         for(LibraryEntry entry : libList){
             listView.getItems().add(entry);
         }
+
+        listView.getSelectionModel().select(selectedIndex);
+        selectSong(listView);
+        SongFileHandler.save(libList, songLibrary);
     }
 
-    private void delete(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
-                        final int selectedIndex) {
-        libList.remove(selectedIndex);
+    private void delete(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList) {
+	    libList.remove(selectedIndex);
         listView.getItems().clear();
 
         for(LibraryEntry entry : libList){
@@ -163,12 +176,14 @@ public class SongLibController {
             listView.getSelectionModel().select(selectedIndex);
             selectSong(listView);
         } else if(libList.size() == selectedIndex) {
-            int index = selectedIndex - 1;
-            listView.getSelectionModel().select(index);
+            selectedIndex = selectedIndex - 1;
+            listView.getSelectionModel().select(selectedIndex);
             selectSong(listView);
         } else if(libList.size() == 0) {
             selectSong(listView);
         }
+
+        SongFileHandler.save(libList, songLibrary);
     }
 
     private void cancel() {
