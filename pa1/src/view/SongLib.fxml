@@ -51,9 +51,10 @@ styleClass="root">
         </VBox>
             
         <VBox spacing="10" alignment="center">
-            <Button id="add" text="Add"/>
-            <Button id="edit" text="Edit"/>
-            <Button id="delete" text="Delete"/>
+            <Button fx:id="add" text="Add"/>
+            <Button fx:id="edit" text="Edit"/>
+            <Button fx:id="delete" text="Delete"/>
+            <Button fx:id="cancel" text="Cancel"/>
         </VBox>
         
         <VBox spacing="5" alignment="CENTER-RIGHT">
