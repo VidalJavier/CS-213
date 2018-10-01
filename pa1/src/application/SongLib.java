@@ -1,3 +1,7 @@
+/*
+    Javier Vidal
+    Jimmy Wen
+*/
 package application;
 
 import javafx.application.Application;

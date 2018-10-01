@@ -1,3 +1,8 @@
+/*
+    Javier Vidal
+    Jimmy Wen
+*/
+
 package view;
 
 import javafx.geometry.Pos;

@@ -1,3 +1,7 @@
+/*
+    Javier Vidal
+    Jimmy Wen
+*/
 package model;
 
 public class LibraryEntry {

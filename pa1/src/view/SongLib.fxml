@@ -4,6 +4,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--
+    Javier Vidal
+    Jimmy Wen
+-->
+
 <GridPane fx:controller="view.SongLibController"
 xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10"
 styleClass="root">

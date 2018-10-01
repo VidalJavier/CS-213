@@ -1,3 +1,7 @@
+/*
+    Javier Vidal
+    Jimmy Wen
+*/
 package view;
 
 import javafx.event.EventHandler;
@@ -134,15 +138,19 @@ public class SongLibController {
             } else {
                 while (newEntry.getTitle().compareTo(libList.get(index).getTitle()) == 0) {
                     if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
+                        libList.add(index, newEntry);
                         break;
                     } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
                         ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
                         return;
                     } else {
+                        if(index == libList.size() - 1) {
+                            libList.add(newEntry);
+                            break;
+                        }
                         index++;
                     }
                 }
-                libList.add(index, newEntry);
             }
         }
 
@@ -158,7 +166,12 @@ public class SongLibController {
 
     private void edit(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
                       final String song, final String artist, final String album, final String year) {
-        for (LibraryEntry entry : libList) {
+        if(song.equals("") || artist.equals("")) {
+            ErrorBox.invalidEntry(INVALID_MESSAGE);
+            return;
+        }
+
+	    for (LibraryEntry entry : libList) {
             if(entry.getTitle().compareTo(song) == 0 && entry.getArtist().compareTo(artist) == 0) {
                 ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
                 return;
