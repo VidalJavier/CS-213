@@ -13,7 +13,7 @@ import model.LibraryEntry;
 public class SongFileHandler {
 	
 	public static ArrayList<LibraryEntry> openAndRead(File songLibrary) throws FileNotFoundException {
-		//Load saved user song library from previous session
+	    //Load saved user song library from previous session
 		try{
 			if(songLibrary.createNewFile()) {
 				System.out.println("Created new songLibrary text file");
@@ -34,28 +34,22 @@ public class SongFileHandler {
 				String entryProperties[] = line.split(",");
                                 
 				if(entryProperties.length == 4) {
-                                        String year = entryProperties[3].substring(2);
+				    String year = entryProperties[3].substring(2);
 					LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
-							entryProperties[2], year);
+                            entryProperties[2], year);
 					libList.add(entry);
 				} else if(entryProperties.length == 3){
-                                    if(entryProperties[2].startsWith("##")){
-                                        String year = entryProperties[2].substring(2);
-                                        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
-							"", year);
-                                        
-                                    }
-                                    else{
-                                        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
-							entryProperties[2], "");
-                                    }
-                                } else if(entryProperties.length == 2){
-                                    LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
-							"", "");
-                                } else{
-                                    System.out.println("Error with input. Not enough arguments. Should not get here\n");
-                                    System.exit(1);
-                                }
+				    if(entryProperties[2].startsWith("##")){
+				        String year = entryProperties[2].substring(2);
+				        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1], "", year);
+				    }
+				    else{
+				        LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1],
+                                entryProperties[2], "");
+				    }
+				} else if(entryProperties.length == 2){
+				    LibraryEntry entry = new LibraryEntry(entryProperties[0], entryProperties[1], "", "");
+				}
 			}
 			fileReader.close();
 		} catch(IOException e) {

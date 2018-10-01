@@ -19,7 +19,7 @@ final class UserPrompt {
     private static final String CANCEL = "Cancel";
     private static final String CLOSE = "Close";
     private static final String ERROR = "ERROR";
-    private static final String MESSAGE = "Cannot add duplicate song!";
+    private static final String INVALID_MESSAGE = "Invalid entry: Please include both song title and artist!";
 
     private static final String SONG_TITLE = "Song Title";
     private static final String ARTIST = "Artist";
@@ -71,22 +71,26 @@ final class UserPrompt {
 		Optional<ButtonType> result = addDialog.showAndWait();
 
 		if(result.isPresent() && result.get() == ButtonType.OK) {
+		    if(title.getText().equals("") || artist.getText().equals("")) {
+                errorWithEntry(INVALID_MESSAGE);
+                return new UserAction(null, false);
+            }
 		    LibraryEntry newEntry = new LibraryEntry(title.getText(), artist.getText(), album.getText(), year.getText());
 		    return new UserAction(newEntry, true);
         } else {
-            return new UserAction(new LibraryEntry(), false);
+            return new UserAction(null, false);
         }
 	}
 
-	static void duplicateEntry() {
+	static void errorWithEntry(final String message) {
         Stage window = new Stage();
 
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(ERROR);
-        window.setMinWidth(250);
+        window.setMinWidth(500);
 
         Label label= new Label();
-        label.setText(MESSAGE);
+        label.setText(message);
 
         Button close = new Button(CLOSE);
         close.setOnAction(e -> window.close());

@@ -7,9 +7,6 @@ public class LibraryEntry {
 	private String album;
 	private String year;
 
-	public LibraryEntry(){
-	}
-
 	public LibraryEntry(final String title, final String artist, final String album, final String year){
 		this.title = title;
 		this.artist = artist;
@@ -41,9 +38,9 @@ public class LibraryEntry {
 	
 	public void setYear(final String year){ this.year = year; }
 	
-        public String toDetailedString(){
-            return this.title + "\n" + this.artist + "\n" + this.album + "\n" + this.year + "\n";
-        }
+	public String toDetailedString(){
+		return this.title + "\n" + this.artist + "\n" + this.album + "\n" + this.year + "\n";
+	}
         
 	@Override
 	public String toString(){

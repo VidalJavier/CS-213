@@ -1,10 +1,7 @@
 package songLib;
 
-import javafx.fxml.FXML;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -38,14 +35,12 @@ public class SongLibrary extends Application {
     private static final String ADD_ENTRY = "Add an entry";
     private static final String EDIT_ENTRY = "Edit an entry";
 
-    private static final String BY = "by ";
+    private static final String MESSAGE = "Cannot add duplicate song!";
 
     private ListView<LibraryEntry> listView;
-
-    //private TextArea textArea;
 	
     public static void main(String[] args){
-	launch(args);
+	    launch(args);
     }
 	
     @Override
@@ -79,6 +74,7 @@ public class SongLibrary extends Application {
         TextArea textArea = new TextArea();
         textArea.setMinHeight(100.0);
         if(listView.getSelectionModel().getSelectedItem() != null){
+            textArea.setEditable(false);
             textArea.setText("Title: " + listView.getSelectionModel().getSelectedItem().getTitle()
                     + "\nArtist: " + listView.getSelectionModel().getSelectedItem().getArtist()
                     + "\nAlbum: " + listView.getSelectionModel().getSelectedItem().getAlbum()
@@ -92,26 +88,21 @@ public class SongLibrary extends Application {
         removeEntry.setOnAction(e -> remove());
         editEntry.setOnAction(e -> edit(listView, libList, primaryStage));
         
-        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                System.out.println("Clicked");
-                if (listView.getSelectionModel().getSelectedItem() != null) {
-                    textArea.setText("Title: " + listView.getSelectionModel().getSelectedItem().getTitle()
-                            + "\nArtist: " + listView.getSelectionModel().getSelectedItem().getArtist()
-                            + "\nAlbum: " + listView.getSelectionModel().getSelectedItem().getAlbum()
-                            + "\nYear: " + listView.getSelectionModel().getSelectedItem().getYear()
-                    );
-                } else {
-                    textArea.setText("Song information");
-                }
+        EventHandler<MouseEvent> eventHandler = e -> {
+            if (listView.getSelectionModel().getSelectedItem() != null) {
+                textArea.setEditable(false);
+                textArea.setText("Title: " + listView.getSelectionModel().getSelectedItem().getTitle()
+                        + "\nArtist: " + listView.getSelectionModel().getSelectedItem().getArtist()
+                        + "\nAlbum: " + listView.getSelectionModel().getSelectedItem().getAlbum()
+                        + "\nYear: " + listView.getSelectionModel().getSelectedItem().getYear());
+            } else {
+                textArea.setEditable(false);
+                textArea.setText("Song information");
             }
         };
         listView.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
-        
-        
+
         VBox layout = new VBox(10);
-        
         HBox buttonLayout = new HBox(10);
         buttonLayout.getChildren().addAll(addEntry, removeEntry, editEntry);
         buttonLayout.setAlignment(Pos.BASELINE_CENTER);
@@ -154,7 +145,7 @@ public class SongLibrary extends Application {
                     if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
                         break;
                     } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
-                        UserPrompt.duplicateEntry();
+                        UserPrompt.errorWithEntry(MESSAGE);
                         return libList;
                     } else {
                         index++;
@@ -165,10 +156,8 @@ public class SongLibrary extends Application {
         }
         
         listView.getItems().clear();
-        
         for(LibraryEntry entry : libList){
             listView.getItems().add(entry);
-            //listView.getItems().add(String.format("%s\n\t%s%s", entry.getTitle(), BY, entry.getArtist()));
         }
         
         return libList;
