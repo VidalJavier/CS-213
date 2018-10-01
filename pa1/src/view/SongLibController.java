@@ -19,6 +19,9 @@ public class SongLibController {
     private static final String DUPLICATE_MESSAGE = "Error: Cannot add duplicate song";
     private static final String INVALID_MESSAGE = "Error: Must include both song and artist";
 
+    private static final String EDIT_CONFIRMATION = "Are you sure you want to edit the selected song?";
+    private static final String DELETE_CONFIRMATION = "Are you sure you want to delete the selected song?";
+
     @FXML TextField song;
     @FXML TextField artist;
     @FXML TextField album;
@@ -49,18 +52,31 @@ public class SongLibController {
         EventHandler<MouseEvent> eventHandler = e -> {
             selectSong(listView);
             int selectedIndex = listView.getSelectionModel().getSelectedIndex();
-//            edit.setOnAction(h -> edit(listView, libList, primaryStage, selectedIndex));
-//            delete.setOnAction(g -> delete());
+            song.setText(libList.get(selectedIndex).getTitle());
+            artist.setText(libList.get(selectedIndex).getArtist());
+            album.setText(libList.get(selectedIndex).getAlbum());
+            year.setText(libList.get(selectedIndex).getYear());
+
+            edit.setOnAction(f -> {
+                boolean check = ErrorBox.confirmation(EDIT_CONFIRMATION);
+                if(check) {
+                    edit(listView, libList, selectedIndex, song.getText(), artist.getText(), album.getText(), year.getText());
+                }
+            });
+            delete.setOnAction(g -> {
+                boolean check = ErrorBox.confirmation(DELETE_CONFIRMATION);
+                if(check) {
+                    delete(listView, libList, selectedIndex);
+                }
+            });
         };
 
-        add.setOnAction(f -> add(listView, libList));
-//        edit.setOnAction(h -> edit(listView, libList, primaryStage, 0));
-//        delete.setOnAction(g -> delete());
+        add.setOnAction(e -> add(listView, libList));
+        cancel.setOnAction(e -> cancel());
 
         listView.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
-
 	}
-	
+
     private void selectSong(final ListView<LibraryEntry> listView) {
         if (listView.getSelectionModel().getSelectedItem() != null) {
             details.setEditable(false);
@@ -74,10 +90,10 @@ public class SongLibController {
         }
     }
 
-    private ArrayList<LibraryEntry> add(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList) {
+    private void add(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList) {
 	    if(song.getText().equals("") || artist.getText().equals("")) {
-            UserPrompt.invalidEntry(INVALID_MESSAGE);
-            return libList;
+            ErrorBox.invalidEntry(INVALID_MESSAGE);
+            return;
         }
 
         LibraryEntry newEntry = new LibraryEntry(song.getText(), artist.getText(), album.getText(), year.getText());
@@ -101,8 +117,8 @@ public class SongLibController {
                     if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) < 0) {
                         break;
                     } else if (newEntry.getArtist().compareTo(libList.get(index).getArtist()) == 0){
-                        UserPrompt.invalidEntry(DUPLICATE_MESSAGE);
-                        return libList;
+                        ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
+                        return;
                     } else {
                         index++;
                     }
@@ -115,8 +131,50 @@ public class SongLibController {
         for(LibraryEntry entry : libList){
             listView.getItems().add(entry);
         }
-
-        return libList;
     }
 
+    private void edit(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
+                      final int selectedIndex, final String song, final String artist,
+                      final String album, final String year) {
+        for (LibraryEntry entry : libList) {
+            if(entry.getTitle().compareTo(song) == 0 && entry.getArtist().compareTo(artist) == 0) {
+                ErrorBox.invalidEntry(DUPLICATE_MESSAGE);
+                return;
+            }
+        }
+
+        libList.set(selectedIndex, new LibraryEntry(song, artist, album, year));
+        listView.getItems().clear();
+        for(LibraryEntry entry : libList){
+            listView.getItems().add(entry);
+        }
+    }
+
+    private void delete(final ListView<LibraryEntry> listView, final ArrayList<LibraryEntry> libList,
+                        final int selectedIndex) {
+        libList.remove(selectedIndex);
+        listView.getItems().clear();
+
+        for(LibraryEntry entry : libList){
+            listView.getItems().add(entry);
+        }
+
+        if(libList.size() > selectedIndex) {
+            listView.getSelectionModel().select(selectedIndex);
+            selectSong(listView);
+        } else if(libList.size() == selectedIndex) {
+            int index = selectedIndex - 1;
+            listView.getSelectionModel().select(index);
+            selectSong(listView);
+        } else if(libList.size() == 0) {
+            selectSong(listView);
+        }
+    }
+
+    private void cancel() {
+	    song.clear();
+	    artist.clear();
+	    album.clear();
+	    year.clear();
+    }
 }
